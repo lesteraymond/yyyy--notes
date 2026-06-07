@@ -1,0 +1,7 @@
+{
+  "name": "yyyyyyyyy",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.107.0"
+  }
+}

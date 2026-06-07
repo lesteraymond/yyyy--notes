@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>yyyy - love notes for yannaaa</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <section class="auth-screen" id="auth-screen">
+        <div class="glass-card auth-card" id="auth-card">
+            <h1 class="title-main">
+                yyyy - notes <span class="pulse"></span>
+            </h1>
+            <p class="subtitle-auth">Who's there?</p>
+            <div class="input-wrapper">
+                <input class="input-field" id="name-input" placeholder="Enter your name..." type="text" />
+                <p class="error-msg" id="error-msg">Aww, this space is for someone special</p>
+            </div>
+            <button class="btn-primary" onclick="checkName()">
+                Enter
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </div>
+    </section>
+
+    <main class="main-content" id="main-content">
+        <header class="app-header">
+            <div class="header-title-wrapper">
+                <h2 class="header-title">yyyy - notes</h2>
+                <p class="header-subtitle">Y's are for Yannaaa</p>
+            </div>
+            <div class="header-controls desktop-only">
+                <div class="board-pagination" id="board-pagination"></div>
+                <button class="btn-icon" onclick="addNewBoard()" title="New Page">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </button>
+                <button class="btn-icon" onclick="removeCurrentBoard()" title="Delete this entire page">
+                    <span class="material-symbols-outlined">delete_forever</span>
+                </button>
+                <button class="btn-icon" onclick="clearBoard()" title="Erase all notes on this page">
+                    <span class="material-symbols-outlined">ink_eraser</span>
+                </button>
+            </div>
+            <button class="btn-icon mobile-only" onclick="toggleMenu()" id="mobile-menu-trigger">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </header>
+
+        <div class="mobile-menu-overlay glass-card" id="mobile-menu">
+            <div class="menu-content" id="menu-main">
+                <button class="menu-item" onclick="showSubmenu('pages')">
+                    <span class="material-symbols-outlined">auto_stories</span>
+                    Manage Pages
+                    <span class="material-symbols-outlined ms-auto">chevron_right</span>
+                </button>
+                <button class="menu-item" onclick="clearBoard(); toggleMenu();">
+                    <span class="material-symbols-outlined">ink_eraser</span>
+                    Erase all notes
+                </button>
+                <button class="menu-item text-error" onclick="removeCurrentBoard(); toggleMenu();">
+                    <span class="material-symbols-outlined">delete_forever</span>
+                    Delete this page
+                </button>
+                <button class="btn-close-menu" onclick="toggleMenu()">Close</button>
+            </div>
+
+            <div class="menu-content hidden" id="menu-pages">
+                <div class="submenu-header">
+                    <button class="btn-icon" onclick="showSubmenu('main')">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <span>Manage Pages</span>
+                </div>
+                <div class="mobile-pagination-wrapper">
+                    <div class="board-pagination" id="board-pagination-mobile"></div>
+                </div>
+                <button class="menu-item" onclick="addNewBoard()">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Create New Page
+                </button>
+            </div>
+        </div>
+
+        <div class="canvas-area" id="sticky-canvas">
+        </div>
+
+        <footer class="footer-bar">
+            <div class="glass-card footer-container">
+                <div class="flex-1 px-4">
+                    <input class="footer-input" id="message-input" placeholder="Type something ..." type="text" />
+                </div>
+                <button class="btn-post" onclick="postMessage()">
+                    Post
+                    <span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
+                </button>
+            </div>
+            <div class="footer-credits">
+                <a href="https://github.com/lesteraymond/yyyyyyyyy" target="_blank" class="repo-link">
+                    <span class="material-symbols-outlined">code</span> github
+                </a>
+                <p class="made-with-hearts">made with hearts, just for you</p>
+            </div>
+        </footer>
+    </main>
+
+    <div class="modal-overlay" id="custom-modal">
+        <div class="glass-card modal-card">
+            <div class="modal-icon" id="modal-icon">🪄</div>
+            <h3 class="modal-title" id="modal-title">Confirm</h3>
+            <p class="modal-message" id="modal-message">Are you sure?</p>
+            <div class="modal-actions">
+                <button class="btn-modal-secondary" onclick="closeModal(false)">Cancel</button>
+                <button class="btn-modal-primary" onclick="closeModal(true)">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="heart-container" id="heart-container"></div>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

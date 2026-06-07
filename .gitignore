@@ -1,0 +1,10 @@
+# User-specific stuff
+node_modules
+.idea
+.git
+.env
+.DS_Store
+
+
+.vercel
+.env*
