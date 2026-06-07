@@ -88,6 +88,16 @@ body {
     text-align: center;
 }
 
+.clickable-heart {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.clickable-heart:active {
+    transform: scale(1.4);
+}
+
 .title-main {
     font-family: var(--font-headline);
     font-size: 35px;
@@ -1014,7 +1024,17 @@ body {
         gap: 0.5rem;
     }
 
-    .title-main {
+    .clickable-heart {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.clickable-heart:active {
+    transform: scale(1.4);
+}
+
+.title-main {
         font-size: 20px;
         margin: 0;
     }
@@ -1058,6 +1078,16 @@ body {
     .auth-card {
         padding: 1rem;
     }
-    .title-main { font-size: 22px; }
+    .clickable-heart {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.clickable-heart:active {
+    transform: scale(1.4);
+}
+
+.title-main { font-size: 22px; }
     .subtitle-auth { margin-bottom: 0.5rem; }
 }
