@@ -976,8 +976,8 @@ body {
     }
 
     .canvas-note {
-        width: 160px;
-        padding: 1rem;
+        width: 130px;
+        padding: 0.75rem;
         border-radius: 0.75rem;
     }
 
