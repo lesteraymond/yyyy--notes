@@ -585,7 +585,8 @@ body {
 }
 
 .footer-container {
-    max-width: 768px;
+    max-width: 1024px;
+    width: 90%;
     margin: 0 auto;
     border-radius: var(--radius-full);
     padding: 0.5rem;
