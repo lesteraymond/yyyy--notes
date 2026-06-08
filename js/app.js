@@ -95,7 +95,9 @@ async function postMessage() {
 	const board = boards[currentBoardIndex];
 	if (!board) return;
 
-	const payload = {
+	const tempId = `temp-${Date.now()}`;
+	const optimisticMessage = {
+		id: tempId,
 		board_id: board.id,
 		text: text,
 		time: now.toLocaleString("en-US", {
@@ -107,28 +109,55 @@ async function postMessage() {
 		x: Math.random() * 70 + 5,
 		y: Math.random() * 60 + 5,
 		rotation: Math.random() * 10 - 5,
+		created_at: now.toISOString(),
+		isOptimistic: true,
 	};
+
+	currentMessages.push(optimisticMessage);
+	input.value = "";
+	renderMessages();
+
+	createHeartExplosion(optimisticMessage.x, optimisticMessage.y);
+
+	const canvas = document.getElementById("sticky-canvas");
+	canvas.classList.add("camera-shake");
+	setTimeout(() => canvas.classList.remove("camera-shake"), 400);
 
 	try {
 		const res = await fetch("/api/post-message", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
+			body: JSON.stringify({
+				board_id: optimisticMessage.board_id,
+				text: optimisticMessage.text,
+				time: optimisticMessage.time,
+				x: optimisticMessage.x,
+				y: optimisticMessage.y,
+				rotation: optimisticMessage.rotation,
+			}),
 		});
 		const newMessage = await res.json();
 		if (!res.ok) throw new Error(newMessage.error || "Failed to post message");
 
-		currentMessages.push(newMessage);
-		input.value = "";
-		renderMessages();
-
-		createHeartExplosion(newMessage.x, newMessage.y);
-
-		const canvas = document.getElementById("sticky-canvas");
-		canvas.classList.add("camera-shake");
-		setTimeout(() => canvas.classList.remove("camera-shake"), 400);
+		const index = currentMessages.findIndex((m) => m.id === tempId);
+		if (index !== -1) {
+			const existing = currentMessages[index];
+			currentMessages[index] = {
+				...newMessage,
+				x: existing.x,
+				y: existing.y,
+				rotation: existing.rotation,
+				liked: existing.liked,
+			};
+			renderMessages();
+		}
 	} catch (e) {
 		console.error("Failed to post message:", e.message);
+		currentMessages = currentMessages.filter((m) => m.id !== tempId);
+		renderMessages();
+		if (input.value === "") {
+			input.value = text;
+		}
 	}
 }
 
@@ -230,6 +259,11 @@ function makeDraggable(note, msg) {
 }
 
 async function updateMessage(id, updates) {
+	if (typeof id === "string" && id.startsWith("temp-")) {
+		const msg = currentMessages.find((m) => m.id === id);
+		if (msg) Object.assign(msg, updates);
+		return;
+	}
 	try {
 		const res = await fetch("/api/messages", {
 			method: "PATCH",
@@ -252,7 +286,9 @@ function renderMessages() {
 	currentMessages.forEach((msg) => {
 		const note = document.createElement("div");
 		const isNew = Date.now() - new Date(msg.created_at).getTime() < 1000;
-		note.className = `canvas-note glass-card note-glow${isNew ? " pop-in" : ""}`;
+		note.className = `canvas-note glass-card note-glow${isNew ? " pop-in" : ""}${
+			msg.isOptimistic ? " note-pending" : ""
+		}`;
 		note.style.left = `${msg.x}%`;
 		note.style.top = `${msg.y}%`;
 		note.style.setProperty("--note-rotation", `${msg.rotation}deg`);
@@ -322,6 +358,14 @@ function spawnNoteHearts(container, cx, cy) {
 
 async function deleteMessage(id, noteEl) {
 	noteEl.classList.add("note-exit-animation");
+
+	if (typeof id === "string" && id.startsWith("temp-")) {
+		setTimeout(() => {
+			currentMessages = currentMessages.filter((m) => m.id !== id);
+			renderMessages();
+		}, 500);
+		return;
+	}
 
 	try {
 		const res = await fetch("/api/messages", {

@@ -451,6 +451,11 @@ body {
     box-shadow: 0 30px 60px rgba(255, 179, 198, 0.5), 0 0 20px rgba(255, 179, 198, 0.3);
 }
 
+.note-pending {
+    opacity: 0.6;
+    filter: grayscale(0.2);
+}
+
 .note-delete-btn {
     position: absolute;
     top: 6px;
