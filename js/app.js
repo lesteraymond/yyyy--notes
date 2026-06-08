@@ -11,6 +11,22 @@ async function init() {
 	}
 }
 
+async function refreshAll() {
+	const canvas = document.getElementById("sticky-canvas");
+	canvas.style.opacity = "0.5";
+	try {
+		await fetchBoards();
+		if (boards.length > 0) {
+			if (currentBoardIndex >= boards.length) {
+				currentBoardIndex = 0;
+			}
+			await loadBoard(currentBoardIndex);
+		}
+	} finally {
+		canvas.style.opacity = "";
+	}
+}
+
 async function fetchBoards() {
 	try {
 		const res = await fetch("/api/canvases");
