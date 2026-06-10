@@ -663,9 +663,19 @@ function renderBoardPagination() {
 		desktopContainer.innerHTML = "";
 		boards.forEach((board, index) => {
 			const dot = document.createElement("button");
+			const isEnvelope = board.type === "envelope";
 			dot.className = `page-dot${index === currentBoardIndex ? " active" : ""}`;
 			dot.onclick = () => switchBoard(index);
-			dot.title = `Page ${index + 1}`;
+			dot.title = `Page ${index + 1} (${isEnvelope ? "Love Letters" : "Sticky Notes"})`;
+
+			if (index === currentBoardIndex) {
+				const icon = document.createElement("span");
+				icon.className = "material-symbols-outlined";
+				icon.style.fontSize = "12px";
+				icon.innerText = isEnvelope ? "mail" : "description";
+				dot.appendChild(icon);
+			}
+
 			desktopContainer.appendChild(dot);
 		});
 	}
@@ -674,10 +684,14 @@ function renderBoardPagination() {
 		mobileContainer.innerHTML = "";
 		boards.forEach((board, index) => {
 			const item = document.createElement("button");
+			const isEnvelope = board.type === "envelope";
 			item.className = `menu-item page-list-item${
 				index === currentBoardIndex ? " active" : ""
 			}`;
 			item.innerHTML = `
+				<span class="material-symbols-outlined" style="font-size: 20px; opacity: 0.6;">
+					${isEnvelope ? "mail" : "description"}
+				</span>
 				<span>Page ${index + 1}</span>
 				${
 					index === currentBoardIndex

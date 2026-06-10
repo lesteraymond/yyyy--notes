@@ -358,6 +358,10 @@ body {
     background: var(--color-secondary);
     width: 24px;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
 
 .app-header {
