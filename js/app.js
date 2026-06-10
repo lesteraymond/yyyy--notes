@@ -104,13 +104,18 @@ async function checkName() {
 
 async function postMessage() {
 	const input = document.getElementById("message-input");
-	const text = input.value.trim();
-	if (!text) return;
+	let text = input.value.trim();
 
 	const mood_type = document.getElementById("mood-type").value;
 	const mood_title = document.getElementById("mood-title").value.trim();
 	const mood_artist = document.getElementById("mood-artist").value.trim();
 	const mood_lyrics = document.getElementById("mood-lyrics").value.trim();
+
+	// Allow posting if there's either a message OR enough mood info
+	if (!text && !mood_title && !mood_lyrics) return;
+
+	// If no message, use a default or empty string (API requires text)
+	if (!text) text = "";
 
 	const now = new Date();
 	const board = boards[currentBoardIndex];
@@ -334,7 +339,52 @@ function renderMessages() {
 function toggleMoodPanel() {
 	const panel = document.getElementById("mood-panel");
 	panel.classList.toggle("hidden");
+	if (!panel.classList.contains("hidden")) {
+		updateMoodFields();
+	}
 }
+
+function updateMoodFields() {
+	const type = document.getElementById("mood-type").value;
+	const title = document.getElementById("mood-title");
+	const artist = document.getElementById("mood-artist");
+	const lyrics = document.getElementById("mood-lyrics");
+
+	const configs = {
+		"Listening to music": {
+			title: "Song title",
+			artist: "Artist",
+			lyrics: "Lyrics...",
+			artistVisible: true
+		},
+		"Feeling": {
+			title: "How do you feel?",
+			artist: "Why? (optional)",
+			lyrics: "Tell me more...",
+			artistVisible: true
+		},
+		"Thinking about": {
+			title: "What's on your mind?",
+			artist: "Category",
+			lyrics: "Details...",
+			artistVisible: true
+		},
+		"Watching": {
+			title: "Movie / Show title",
+			artist: "With who? / On what?",
+			lyrics: "Fav scene / Quote...",
+			artistVisible: true
+		}
+	};
+
+	const config = configs[type] || configs["Listening to music"];
+	title.placeholder = config.title;
+	artist.placeholder = config.artist;
+	lyrics.placeholder = config.lyrics;
+	artist.parentElement.style.display = config.artistVisible ? "block" : "none";
+}
+
+document.getElementById("mood-type").addEventListener("change", updateMoodFields);
 
 function getMoodHTML(msg) {
 	let html = "";
@@ -343,11 +393,21 @@ function getMoodHTML(msg) {
 
 	if (hasMusic) {
 		const icon = isMusicMode ? "🎵" : "✨";
-		const prefix = isMusicMode ? "Currently Listening to " : `${msg.mood_type}: `;
-		const title = msg.mood_title ? `"${msg.mood_title}"` : "Something";
-		const artist = msg.mood_artist ? ` by ${msg.mood_artist}` : "";
+		let prefix = "";
+		if (isMusicMode) {
+			prefix = "Currently Listening to ";
+		} else if (msg.mood_type === "Feeling") {
+			prefix = "Feeling ";
+		} else if (msg.mood_type === "Thinking about") {
+			prefix = "Thinking about ";
+		} else if (msg.mood_type === "Watching") {
+			prefix = "Watching ";
+		}
+
+		const title = msg.mood_title ? `"${msg.mood_title}"` : "";
+		const artist = msg.mood_artist ? (isMusicMode ? ` by ${msg.mood_artist}` : ` (${msg.mood_artist})`) : "";
 		html += `<div class="note-mood-info">${icon} ${prefix}${title}${artist}</div>`;
-	} else if (msg.mood_type && msg.mood_type !== "Listening to music") {
+	} else if (msg.mood_type && !isMusicMode) {
 		html += `<div class="note-mood-info">✨ ${msg.mood_type}</div>`;
 	}
 
@@ -368,13 +428,14 @@ function renderStickyNote(canvas, msg) {
 	note.style.setProperty("--note-rotation", `${msg.rotation}deg`);
 
 	const moodHTML = getMoodHTML(msg);
+	const textHTML = msg.text ? `<p class="note-text">"${msg.text}"</p>` : "";
 
 	note.innerHTML = `
         <button class="note-delete-btn" title="Delete note">
             <span class="material-symbols-outlined">close</span>
         </button>
         ${moodHTML}
-        <p class="note-text">"${msg.text}"</p>
+        ${textHTML}
         <div class="note-footer">
             <span class="note-time">${msg.time || "Sweet moments"}</span>
             <button class="note-heart-btn${msg.liked ? " liked" : ""}" title="Love this note">
@@ -457,7 +518,7 @@ function openLetterModal(msg) {
 	const moodHTML = getMoodHTML(msg);
 	const moodDisplay = moodHTML ? `<div class="letter-mood-display">${moodHTML}</div>` : "";
 
-	textEl.innerHTML = `${moodDisplay}${msg.text}`;
+	textEl.innerHTML = `${moodDisplay}${msg.text || ""}`;
 	timeEl.innerText = msg.time || "Sweet moments";
 	heartBtn.className = `btn-icon${msg.liked ? " liked" : ""}`;
 

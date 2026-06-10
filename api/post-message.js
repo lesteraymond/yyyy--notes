@@ -59,8 +59,13 @@ export default async function handler(req, res) {
 	}
 
 	const { board_id, text, time, x, y, rotation, mood_type, mood_artist, mood_title, mood_lyrics } = req.body;
-	if (!board_id || !text) {
-		return res.status(400).json({ error: "board_id and text required" });
+	if (!board_id) {
+		return res.status(400).json({ error: "board_id required" });
+	}
+
+	// Require either text or at least some mood title/lyrics
+	if (!text && !mood_title && !mood_lyrics) {
+		return res.status(400).json({ error: "Message text or mood details required" });
 	}
 
 	const newId = Date.now();
