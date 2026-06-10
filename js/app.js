@@ -338,7 +338,9 @@ function renderMessages() {
 
 function toggleMoodPanel() {
 	const panel = document.getElementById("mood-panel");
+	const btn = document.getElementById("mood-toggle-btn");
 	panel.classList.toggle("hidden");
+	btn.classList.toggle("active");
 	if (!panel.classList.contains("hidden")) {
 		updateMoodFields();
 	}
