@@ -442,7 +442,9 @@ body {
     border-radius: var(--radius-default);
     cursor: grab;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 240px;
+    width: fit-content;
+    min-width: 200px;
+    max-width: 320px;
     box-sizing: border-box;
     transform: rotate(var(--note-rotation)) scale(1);
     user-select: none;
@@ -504,7 +506,7 @@ body {
     font-style: italic;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    max-height: 180px;
+    max-height: 300px;
     overflow-y: auto;
     padding-right: 8px;
 }
@@ -1496,7 +1498,9 @@ body {
     }
 
     .canvas-note {
-        width: 130px;
+        width: fit-content;
+        min-width: 140px;
+        max-width: 220px;
         padding: 0.75rem;
         border-radius: 0.75rem;
     }
@@ -1504,7 +1508,7 @@ body {
     .note-text {
         font-size: 13px;
         line-height: 18px;
-        max-height: 80px;
+        max-height: 150px;
     }
 
     .note-time {
