@@ -377,15 +377,6 @@ function renderEnvelope(canvas, msg) {
                     <span class="material-symbols-outlined material-symbols-fill">favorite</span>
                 </div>
             </div>
-            <div class="letter-content">
-                <p class="letter-text">${msg.text}</p>
-                <div class="letter-footer">
-                    <span class="letter-time">${msg.time || "Sweet moments"}</span>
-                    <button class="note-heart-btn${msg.liked ? " liked" : ""}" title="Love this">
-                        <span class="material-symbols-outlined material-symbols-fill">favorite</span>
-                    </button>
-                </div>
-            </div>
         </div>
         <div class="envelope-actions">
             <button class="btn-envelope-action delete" title="Delete">
@@ -394,10 +385,9 @@ function renderEnvelope(canvas, msg) {
         </div>
     `;
 
-	const envelope = wrapper.querySelector(".envelope");
 	wrapper.addEventListener("click", (e) => {
 		if (e.target.closest("button")) return;
-		wrapper.classList.toggle("open");
+		openLetterModal(msg);
 	});
 
 	wrapper.querySelector(".delete").addEventListener("click", (e) => {
@@ -405,20 +395,42 @@ function renderEnvelope(canvas, msg) {
 		deleteMessage(msg.id, wrapper);
 	});
 
-	const heartBtn = wrapper.querySelector(".note-heart-btn");
-	heartBtn.addEventListener("click", async (e) => {
+	makeDraggable(wrapper, msg);
+	canvas.appendChild(wrapper);
+}
+
+function openLetterModal(msg) {
+	const modal = document.getElementById("letter-modal");
+	const textEl = document.getElementById("letter-text");
+	const timeEl = document.getElementById("letter-time");
+	const heartBtn = document.getElementById("letter-heart-btn");
+
+	textEl.innerText = msg.text;
+	timeEl.innerText = msg.time || "Sweet moments";
+	heartBtn.className = `btn-icon${msg.liked ? " liked" : ""}`;
+
+	modal.classList.add("active");
+
+	// Update heart button click handler
+	heartBtn.onclick = async (e) => {
 		e.stopPropagation();
 		msg.liked = !msg.liked;
 		heartBtn.classList.toggle("liked", msg.liked);
 		await updateMessage(msg.id, { liked: msg.liked });
 
-		const rect = wrapper.getBoundingClientRect();
+		const canvas = document.getElementById("sticky-canvas");
+		const modalRect = modal.querySelector(".letter-modal-card").getBoundingClientRect();
 		const canvasRect = canvas.getBoundingClientRect();
-		spawnNoteHearts(canvas, rect.left - canvasRect.left + rect.width / 2, rect.top - canvasRect.top + rect.height / 2);
-	});
+		spawnNoteHearts(
+			canvas,
+			modalRect.left - canvasRect.left + modalRect.width / 2,
+			modalRect.top - canvasRect.top + modalRect.height / 2,
+		);
+	};
+}
 
-	makeDraggable(wrapper, msg);
-	canvas.appendChild(wrapper);
+function closeLetterModal() {
+	document.getElementById("letter-modal").classList.remove("active");
 }
 
 function spawnNoteHearts(container, cx, cy) {
@@ -792,6 +804,7 @@ document.addEventListener("mousedown", (e) => {
 	const trigger = document.getElementById("mobile-menu-trigger");
 	const modal = document.getElementById("custom-modal");
 	const typeModal = document.getElementById("type-modal");
+	const letterModal = document.getElementById("letter-modal");
 
 	if (menu && menu.classList.contains("active")) {
 		if (!menu.contains(e.target) && !trigger.contains(e.target)) {
@@ -810,6 +823,13 @@ document.addEventListener("mousedown", (e) => {
 		const card = typeModal.querySelector(".modal-card");
 		if (!card.contains(e.target)) {
 			closeTypeModal(null);
+		}
+	}
+
+	if (letterModal && letterModal.classList.contains("active")) {
+		const card = letterModal.querySelector(".letter-modal-card");
+		if (!card.contains(e.target)) {
+			closeLetterModal();
 		}
 	}
 

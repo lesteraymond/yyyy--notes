@@ -1006,6 +1006,85 @@ body {
     font-size: 14px;
 }
 
+/* Letter Modal Styles */
+#letter-modal {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+.letter-modal-card {
+    width: 90%;
+    max-width: 500px;
+    padding: 3rem 2.5rem;
+    position: relative;
+    background: #fffdf9;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#letter-modal.active .letter-modal-card {
+    transform: scale(1);
+}
+
+.btn-close-letter {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--color-outline);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.btn-close-letter:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.letter-modal-text {
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    line-height: 1.4;
+    color: #2d3436;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.letter-modal-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #dfe6e9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.letter-modal-time {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #636e72;
+    font-weight: 600;
+}
+
+.letter-modal-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+#letter-heart-btn.liked {
+    color: #e8457e;
+}
+
 /* Animations */
 @keyframes heart-float {
     0% {
