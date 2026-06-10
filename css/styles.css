@@ -795,6 +795,19 @@ body {
     border-color: var(--color-secondary-container);
 }
 
+.btn-cancel {
+    background: transparent;
+    border: 1.5px solid rgba(134, 78, 90, 0.2);
+    color: var(--color-outline);
+    font-weight: 500;
+}
+
+.btn-cancel:hover {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(134, 78, 90, 0.4);
+    color: var(--color-secondary);
+}
+
 .btn-modal-type .material-symbols-outlined {
     font-size: 24px;
 }

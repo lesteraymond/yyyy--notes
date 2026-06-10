@@ -821,7 +821,13 @@ document.addEventListener("mousedown", (e) => {
 	const letterModal = document.getElementById("letter-modal");
 
 	if (menu && menu.classList.contains("active")) {
-		if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+		const isClickInsideMenu = menu.contains(e.target);
+		const isClickOnTrigger = trigger.contains(e.target);
+		const isModalActive = modal.classList.contains("active") ||
+		                     typeModal.classList.contains("active") ||
+		                     letterModal.classList.contains("active");
+
+		if (!isClickInsideMenu && !isClickOnTrigger && !isModalActive) {
 			toggleMenu();
 		}
 	}
