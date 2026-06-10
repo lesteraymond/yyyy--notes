@@ -1327,14 +1327,23 @@ body {
 
 @media (max-width: 600px) {
     .letter-modal-card {
-        padding: 1.5rem 1rem;
+        padding: 3.5rem 1.5rem 1.5rem 1.5rem;
+        width: 92%;
     }
     .letter-modal-text {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
+        padding-right: 5px;
     }
     .letter-modal-footer {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
         padding-top: 1rem;
+        padding-bottom: 0.5rem;
+    }
+    .btn-close-letter {
+        top: 0.75rem;
+        right: 0.75rem;
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 }
     :root {
