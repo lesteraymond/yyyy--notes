@@ -1106,6 +1106,13 @@ body {
     background: rgba(0,0,0,0.05);
 }
 
+.letter-modal-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
 .letter-modal-text {
     font-family: 'Caveat', cursive;
     font-size: 1.4rem;
@@ -1118,16 +1125,18 @@ body {
     overflow-y: auto;
     /* Ink Bleed Effect */
     text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.15);
-    padding-right: 10px;
+    padding-right: 15px;
 }
 
 .letter-modal-footer {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
     border-top: 1px dashed #dfe6e9;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+    z-index: 2;
 }
 
 .letter-modal-time {
