@@ -88,7 +88,7 @@ async function checkName() {
 				const main = document.getElementById("main-content");
 				main.classList.remove("opacity-0", "pointer-events-none");
 				main.classList.add("fade-in");
-				await init(); 
+				await init();
 			}, 600);
 		} else {
 			card.classList.add("shake");
@@ -357,26 +357,26 @@ function updateMoodFields() {
 			title: "Song title",
 			artist: "Artist",
 			lyrics: "Lyrics...",
-			artistVisible: true
+			artistVisible: true,
 		},
-		"Feeling": {
+		Feeling: {
 			title: "How do you feel?",
 			artist: "Why? (optional)",
 			lyrics: "Tell me more...",
-			artistVisible: true
+			artistVisible: true,
 		},
 		"Thinking about": {
 			title: "What's on your mind?",
 			artist: "Category",
 			lyrics: "Details...",
-			artistVisible: true
+			artistVisible: true,
 		},
-		"Watching": {
+		Watching: {
 			title: "Movie / Show title",
 			artist: "With who? / On what?",
 			lyrics: "Fav scene / Quote...",
-			artistVisible: true
-		}
+			artistVisible: true,
+		},
 	};
 
 	const config = configs[type] || configs["Listening to music"];
@@ -386,7 +386,9 @@ function updateMoodFields() {
 	artist.parentElement.style.display = config.artistVisible ? "block" : "none";
 }
 
-document.getElementById("mood-type").addEventListener("change", updateMoodFields);
+document
+	.getElementById("mood-type")
+	.addEventListener("change", updateMoodFields);
 
 function getMoodHTML(msg) {
 	let html = "";
@@ -407,8 +409,12 @@ function getMoodHTML(msg) {
 		}
 
 		const title = msg.mood_title ? `"${msg.mood_title}"` : "";
-		const artist = msg.mood_artist ? (isMusicMode ? ` by ${msg.mood_artist}` : ` (${msg.mood_artist})`) : "";
-		html += `<div class="note-mood-info">${icon} ${prefix}${title}${artist}</div>`;
+		const artist = msg.mood_artist
+			? isMusicMode
+				? ` by ${msg.mood_artist}`
+				: ` (${msg.mood_artist})`
+			: "";
+		html += `<div class="note-mood-info">${prefix}${title}${artist}</div>`;
 	} else if (msg.mood_type && !isMusicMode) {
 		html += `<div class="note-mood-info">✨ ${msg.mood_type}</div>`;
 	}
@@ -451,23 +457,21 @@ function renderStickyNote(canvas, msg) {
 		deleteMessage(msg.id, note);
 	});
 
-	note
-		.querySelector(".note-heart-btn")
-		.addEventListener("click", async (e) => {
-			e.stopPropagation();
-			e.preventDefault();
-			const btn = e.currentTarget;
-			msg.liked = !msg.liked;
-			btn.classList.toggle("liked", msg.liked);
-			await updateMessage(msg.id, { liked: msg.liked });
-			btn.classList.add("heart-pop");
-			setTimeout(() => btn.classList.remove("heart-pop"), 400);
-			const noteRect = note.getBoundingClientRect();
-			const canvasRect = canvas.getBoundingClientRect();
-			const centerX = noteRect.left - canvasRect.left + noteRect.width / 2;
-			const centerY = noteRect.top - canvasRect.top + noteRect.height / 2;
-			spawnNoteHearts(canvas, centerX, centerY);
-		});
+	note.querySelector(".note-heart-btn").addEventListener("click", async (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+		const btn = e.currentTarget;
+		msg.liked = !msg.liked;
+		btn.classList.toggle("liked", msg.liked);
+		await updateMessage(msg.id, { liked: msg.liked });
+		btn.classList.add("heart-pop");
+		setTimeout(() => btn.classList.remove("heart-pop"), 400);
+		const noteRect = note.getBoundingClientRect();
+		const canvasRect = canvas.getBoundingClientRect();
+		const centerX = noteRect.left - canvasRect.left + noteRect.width / 2;
+		const centerY = noteRect.top - canvasRect.top + noteRect.height / 2;
+		spawnNoteHearts(canvas, centerX, centerY);
+	});
 
 	makeDraggable(note, msg);
 	canvas.appendChild(note);
@@ -518,7 +522,9 @@ function openLetterModal(msg) {
 	const heartBtn = document.getElementById("letter-heart-btn");
 
 	const moodHTML = getMoodHTML(msg);
-	const moodDisplay = moodHTML ? `<div class="letter-mood-display">${moodHTML}</div>` : "";
+	const moodDisplay = moodHTML
+		? `<div class="letter-mood-display">${moodHTML}</div>`
+		: "";
 
 	textEl.innerHTML = `${moodDisplay}${msg.text || ""}`;
 	timeEl.innerText = msg.time || "Sweet moments";
@@ -534,7 +540,9 @@ function openLetterModal(msg) {
 		await updateMessage(msg.id, { liked: msg.liked });
 
 		const canvas = document.getElementById("sticky-canvas");
-		const modalRect = modal.querySelector(".letter-modal-card").getBoundingClientRect();
+		const modalRect = modal
+			.querySelector(".letter-modal-card")
+			.getBoundingClientRect();
 		const canvasRect = canvas.getBoundingClientRect();
 		spawnNoteHearts(
 			canvas,
@@ -727,7 +735,7 @@ async function addNewBoard() {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				name: `Page ${boards.length + 1}`,
-				type: type
+				type: type,
 			}),
 		});
 		const newBoard = await res.json();
@@ -938,9 +946,10 @@ document.addEventListener("mousedown", (e) => {
 	if (menu && menu.classList.contains("active")) {
 		const isClickInsideMenu = menu.contains(e.target);
 		const isClickOnTrigger = trigger.contains(e.target);
-		const isModalActive = modal.classList.contains("active") ||
-		                     typeModal.classList.contains("active") ||
-		                     letterModal.classList.contains("active");
+		const isModalActive =
+			modal.classList.contains("active") ||
+			typeModal.classList.contains("active") ||
+			letterModal.classList.contains("active");
 
 		if (!isClickInsideMenu && !isClickOnTrigger && !isModalActive) {
 			toggleMenu();
