@@ -22,12 +22,12 @@ export default async function handler(req, res) {
 	}
 
 	if (req.method === "POST") {
-		const { name } = req.body;
+		const { name, type } = req.body;
 		const newId = Date.now();
 
 		const { data, error } = await supabase
 			.from("boards")
-			.insert([{ id: newId, name: name || "New Page" }])
+			.insert([{ id: newId, name: name || "New Page", type: type || "sticky" }])
 			.select();
 
 		if (error) return res.status(500).json({ error: error.message });

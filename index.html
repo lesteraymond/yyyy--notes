@@ -7,7 +7,7 @@
     <title>yyyy - notes | love notes for yannaaaa</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Quicksand:wght@400;500;600;700&amp;family=Caveat:wght@400;700&amp;display=swap"
         rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
@@ -132,6 +132,25 @@
             <div class="modal-actions">
                 <button class="btn-modal-secondary" onclick="closeModal(false)">Cancel</button>
                 <button class="btn-modal-primary" onclick="closeModal(true)">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="type-modal">
+        <div class="glass-card modal-card">
+            <div class="modal-icon">💌</div>
+            <h3 class="modal-title">Choose Page Style</h3>
+            <p class="modal-message">How should the notes look on this page?</p>
+            <div class="modal-actions-vertical">
+                <button class="btn-modal-type" onclick="closeTypeModal('sticky')">
+                    <span class="material-symbols-outlined">description</span>
+                    Sticky Notes
+                </button>
+                <button class="btn-modal-type" onclick="closeTypeModal('envelope')">
+                    <span class="material-symbols-outlined">mail</span>
+                    Love Letters
+                </button>
+                <button class="btn-modal-secondary w-full" onclick="closeTypeModal(null)">Cancel</button>
             </div>
         </div>
     </div>

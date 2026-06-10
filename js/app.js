@@ -299,55 +299,126 @@ function renderMessages() {
 	const canvas = document.getElementById("sticky-canvas");
 	canvas.innerHTML = "";
 
+	const currentBoard = boards[currentBoardIndex];
+	const boardType = currentBoard ? currentBoard.type || "sticky" : "sticky";
+
 	currentMessages.forEach((msg) => {
-		const note = document.createElement("div");
-		const isNew = Date.now() - new Date(msg.created_at).getTime() < 1000;
-		note.className = `canvas-note glass-card note-glow${isNew ? " pop-in" : ""}${
-			msg.isOptimistic ? " note-pending" : ""
-		}`;
-		note.style.left = `${msg.x}%`;
-		note.style.top = `${msg.y}%`;
-		note.style.setProperty("--note-rotation", `${msg.rotation}deg`);
+		if (boardType === "envelope") {
+			renderEnvelope(canvas, msg);
+		} else {
+			renderStickyNote(canvas, msg);
+		}
+	});
+}
 
-		note.innerHTML = `
-            <button class="note-delete-btn" title="Delete note">
-                <span class="material-symbols-outlined">close</span>
+function renderStickyNote(canvas, msg) {
+	const note = document.createElement("div");
+	const isNew = Date.now() - new Date(msg.created_at).getTime() < 1000;
+	note.className = `canvas-note glass-card note-glow${isNew ? " pop-in" : ""}${
+		msg.isOptimistic ? " note-pending" : ""
+	}`;
+	note.style.left = `${msg.x}%`;
+	note.style.top = `${msg.y}%`;
+	note.style.setProperty("--note-rotation", `${msg.rotation}deg`);
+
+	note.innerHTML = `
+        <button class="note-delete-btn" title="Delete note">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <p class="note-text">"${msg.text}"</p>
+        <div class="note-footer">
+            <span class="note-time">${msg.time || "Sweet moments"}</span>
+            <button class="note-heart-btn${msg.liked ? " liked" : ""}" title="Love this note">
+                <span class="material-symbols-outlined material-symbols-fill">favorite</span>
             </button>
-            <p class="note-text">"${msg.text}"</p>
-            <div class="note-footer">
-                <span class="note-time">${msg.time || "Sweet moments"}</span>
-                <button class="note-heart-btn${msg.liked ? " liked" : ""}" title="Love this note">
-                    <span class="material-symbols-outlined material-symbols-fill">favorite</span>
-                </button>
-            </div>
-        `;
+        </div>
+    `;
 
-		note.querySelector(".note-delete-btn").addEventListener("click", (e) => {
+	note.querySelector(".note-delete-btn").addEventListener("click", (e) => {
+		e.stopPropagation();
+		deleteMessage(msg.id, note);
+	});
+
+	note
+		.querySelector(".note-heart-btn")
+		.addEventListener("click", async (e) => {
 			e.stopPropagation();
-			deleteMessage(msg.id, note);
+			e.preventDefault();
+			const btn = e.currentTarget;
+			msg.liked = !msg.liked;
+			btn.classList.toggle("liked", msg.liked);
+			await updateMessage(msg.id, { liked: msg.liked });
+			btn.classList.add("heart-pop");
+			setTimeout(() => btn.classList.remove("heart-pop"), 400);
+			const noteRect = note.getBoundingClientRect();
+			const canvasRect = canvas.getBoundingClientRect();
+			const centerX = noteRect.left - canvasRect.left + noteRect.width / 2;
+			const centerY = noteRect.top - canvasRect.top + noteRect.height / 2;
+			spawnNoteHearts(canvas, centerX, centerY);
 		});
 
-		note
-			.querySelector(".note-heart-btn")
-			.addEventListener("click", async (e) => {
-				e.stopPropagation();
-				e.preventDefault();
-				const btn = e.currentTarget;
-				msg.liked = !msg.liked;
-				btn.classList.toggle("liked", msg.liked);
-				await updateMessage(msg.id, { liked: msg.liked });
-				btn.classList.add("heart-pop");
-				setTimeout(() => btn.classList.remove("heart-pop"), 400);
-				const noteRect = note.getBoundingClientRect();
-				const canvasRect = canvas.getBoundingClientRect();
-				const centerX = noteRect.left - canvasRect.left + noteRect.width / 2;
-				const centerY = noteRect.top - canvasRect.top + noteRect.height / 2;
-				spawnNoteHearts(canvas, centerX, centerY);
-			});
+	makeDraggable(note, msg);
+	canvas.appendChild(note);
+}
 
-		makeDraggable(note, msg);
-		canvas.appendChild(note);
+function renderEnvelope(canvas, msg) {
+	const wrapper = document.createElement("div");
+	const isNew = Date.now() - new Date(msg.created_at).getTime() < 1000;
+	wrapper.className = `envelope-wrapper${isNew ? " pop-in" : ""}${
+		msg.isOptimistic ? " note-pending" : ""
+	}`;
+	wrapper.style.left = `${msg.x}%`;
+	wrapper.style.top = `${msg.y}%`;
+
+	wrapper.innerHTML = `
+        <div class="envelope">
+            <div class="envelope-front">
+                <div class="envelope-seal">
+                    <span class="material-symbols-outlined material-symbols-fill">favorite</span>
+                </div>
+            </div>
+            <div class="letter-content">
+                <p class="letter-text">${msg.text}</p>
+                <div class="letter-footer">
+                    <span class="letter-time">${msg.time || "Sweet moments"}</span>
+                    <button class="note-heart-btn${msg.liked ? " liked" : ""}" title="Love this">
+                        <span class="material-symbols-outlined material-symbols-fill">favorite</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="envelope-actions">
+            <button class="btn-envelope-action delete" title="Delete">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+        </div>
+    `;
+
+	const envelope = wrapper.querySelector(".envelope");
+	wrapper.addEventListener("click", (e) => {
+		if (e.target.closest("button")) return;
+		wrapper.classList.toggle("open");
 	});
+
+	wrapper.querySelector(".delete").addEventListener("click", (e) => {
+		e.stopPropagation();
+		deleteMessage(msg.id, wrapper);
+	});
+
+	const heartBtn = wrapper.querySelector(".note-heart-btn");
+	heartBtn.addEventListener("click", async (e) => {
+		e.stopPropagation();
+		msg.liked = !msg.liked;
+		heartBtn.classList.toggle("liked", msg.liked);
+		await updateMessage(msg.id, { liked: msg.liked });
+
+		const rect = wrapper.getBoundingClientRect();
+		const canvasRect = canvas.getBoundingClientRect();
+		spawnNoteHearts(canvas, rect.left - canvasRect.left + rect.width / 2, rect.top - canvasRect.top + rect.height / 2);
+	});
+
+	makeDraggable(wrapper, msg);
+	canvas.appendChild(wrapper);
 }
 
 function spawnNoteHearts(container, cx, cy) {
@@ -508,16 +579,29 @@ async function removeCurrentBoard() {
 	}
 }
 
+let typeModalResolve;
+
 async function addNewBoard() {
 	if (boards.length >= 10) {
 		alert("You've reached the maximum number of pages!");
 		return;
 	}
+
+	document.getElementById("type-modal").classList.add("active");
+	const type = await new Promise((resolve) => {
+		typeModalResolve = resolve;
+	});
+
+	if (!type) return;
+
 	try {
 		const res = await fetch("/api/canvases", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ name: `Page ${boards.length + 1}` }),
+			body: JSON.stringify({
+				name: `Page ${boards.length + 1}`,
+				type: type
+			}),
 		});
 		const newBoard = await res.json();
 		if (!res.ok) throw new Error(newBoard.error || "Failed to add new board");
@@ -528,6 +612,14 @@ async function addNewBoard() {
 		createHeartBurst();
 	} catch (e) {
 		console.error("Failed to add new board:", e.message);
+	}
+}
+
+function closeTypeModal(type) {
+	document.getElementById("type-modal").classList.remove("active");
+	if (typeModalResolve) {
+		typeModalResolve(type);
+		typeModalResolve = null;
 	}
 }
 
@@ -699,6 +791,7 @@ document.addEventListener("mousedown", (e) => {
 	const menu = document.getElementById("mobile-menu");
 	const trigger = document.getElementById("mobile-menu-trigger");
 	const modal = document.getElementById("custom-modal");
+	const typeModal = document.getElementById("type-modal");
 
 	if (menu && menu.classList.contains("active")) {
 		if (!menu.contains(e.target) && !trigger.contains(e.target)) {
@@ -710,6 +803,13 @@ document.addEventListener("mousedown", (e) => {
 		const card = modal.querySelector(".modal-card");
 		if (!card.contains(e.target)) {
 			closeModal(false);
+		}
+	}
+
+	if (typeModal && typeModal.classList.contains("active")) {
+		const card = typeModal.querySelector(".modal-card");
+		if (!card.contains(e.target)) {
+			closeTypeModal(null);
 		}
 	}
 
