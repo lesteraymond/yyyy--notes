@@ -107,6 +107,11 @@ async function postMessage() {
 	const text = input.value.trim();
 	if (!text) return;
 
+	const mood_type = document.getElementById("mood-type").value;
+	const mood_title = document.getElementById("mood-title").value.trim();
+	const mood_artist = document.getElementById("mood-artist").value.trim();
+	const mood_lyrics = document.getElementById("mood-lyrics").value.trim();
+
 	const now = new Date();
 	const board = boards[currentBoardIndex];
 	if (!board) return;
@@ -127,10 +132,21 @@ async function postMessage() {
 		rotation: Math.random() * 10 - 5,
 		created_at: now.toISOString(),
 		isOptimistic: true,
+		mood_type,
+		mood_artist,
+		mood_title,
+		mood_lyrics,
 	};
 
 	currentMessages.push(optimisticMessage);
 	input.value = "";
+	// Clear mood fields
+	document.getElementById("mood-title").value = "";
+	document.getElementById("mood-artist").value = "";
+	document.getElementById("mood-lyrics").value = "";
+	// Hide panel if it was open
+	document.getElementById("mood-panel").classList.add("hidden");
+
 	renderMessages();
 
 	createHeartExplosion(optimisticMessage.x, optimisticMessage.y);
@@ -150,6 +166,10 @@ async function postMessage() {
 				x: optimisticMessage.x,
 				y: optimisticMessage.y,
 				rotation: optimisticMessage.rotation,
+				mood_type: optimisticMessage.mood_type,
+				mood_artist: optimisticMessage.mood_artist,
+				mood_title: optimisticMessage.mood_title,
+				mood_lyrics: optimisticMessage.mood_lyrics,
 			}),
 		});
 		const newMessage = await res.json();
@@ -311,6 +331,32 @@ function renderMessages() {
 	});
 }
 
+function toggleMoodPanel() {
+	const panel = document.getElementById("mood-panel");
+	panel.classList.toggle("hidden");
+}
+
+function getMoodHTML(msg) {
+	let html = "";
+	const hasMusic = msg.mood_title || msg.mood_artist;
+	const isMusicMode = msg.mood_type === "Listening to music";
+
+	if (hasMusic) {
+		const icon = isMusicMode ? "🎵" : "✨";
+		const prefix = isMusicMode ? "Currently Listening to " : `${msg.mood_type}: `;
+		const title = msg.mood_title ? `"${msg.mood_title}"` : "Something";
+		const artist = msg.mood_artist ? ` by ${msg.mood_artist}` : "";
+		html += `<div class="note-mood-info">${icon} ${prefix}${title}${artist}</div>`;
+	} else if (msg.mood_type && msg.mood_type !== "Listening to music") {
+		html += `<div class="note-mood-info">✨ ${msg.mood_type}</div>`;
+	}
+
+	if (msg.mood_lyrics) {
+		html += `<span class="note-lyrics">"${msg.mood_lyrics}"</span>`;
+	}
+	return html;
+}
+
 function renderStickyNote(canvas, msg) {
 	const note = document.createElement("div");
 	const isNew = Date.now() - new Date(msg.created_at).getTime() < 1000;
@@ -321,10 +367,13 @@ function renderStickyNote(canvas, msg) {
 	note.style.top = `${msg.y}%`;
 	note.style.setProperty("--note-rotation", `${msg.rotation}deg`);
 
+	const moodHTML = getMoodHTML(msg);
+
 	note.innerHTML = `
         <button class="note-delete-btn" title="Delete note">
             <span class="material-symbols-outlined">close</span>
         </button>
+        ${moodHTML}
         <p class="note-text">"${msg.text}"</p>
         <div class="note-footer">
             <span class="note-time">${msg.time || "Sweet moments"}</span>
@@ -405,7 +454,10 @@ function openLetterModal(msg) {
 	const timeEl = document.getElementById("letter-time");
 	const heartBtn = document.getElementById("letter-heart-btn");
 
-	textEl.innerText = msg.text;
+	const moodHTML = getMoodHTML(msg);
+	const moodDisplay = moodHTML ? `<div class="letter-mood-display">${moodHTML}</div>` : "";
+
+	textEl.innerHTML = `${moodDisplay}${msg.text}`;
 	timeEl.innerText = msg.time || "Sweet moments";
 	heartBtn.className = `btn-icon${msg.liked ? " liked" : ""}`;
 

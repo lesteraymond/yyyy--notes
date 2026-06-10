@@ -58,7 +58,7 @@ export default async function handler(req, res) {
 		return res.status(405).json({ error: "Method not allowed" });
 	}
 
-	const { board_id, text, time, x, y, rotation } = req.body;
+	const { board_id, text, time, x, y, rotation, mood_type, mood_artist, mood_title, mood_lyrics } = req.body;
 	if (!board_id || !text) {
 		return res.status(400).json({ error: "board_id and text required" });
 	}
@@ -77,6 +77,10 @@ export default async function handler(req, res) {
 				y,
 				rotation: rotation || 0,
 				liked: false,
+				mood_type,
+				mood_artist,
+				mood_title,
+				mood_lyrics,
 			},
 		])
 		.select();

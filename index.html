@@ -106,14 +106,40 @@
         </div>
 
         <footer class="footer-bar">
-            <div class="glass-card footer-container">
-                <div class="flex-1 px-4">
-                    <input class="footer-input" id="message-input" placeholder="Type something ..." type="text" />
+            <div class="glass-card footer-container-wrapper">
+                <div class="mood-panel hidden" id="mood-panel">
+                    <div class="mood-grid">
+                        <div class="input-wrapper">
+                            <select class="footer-input mood-select" id="mood-type">
+                                <option value="Listening to music">Listening to music</option>
+                                <option value="Feeling">Feeling</option>
+                                <option value="Thinking about">Thinking about</option>
+                                <option value="Watching">Watching</option>
+                            </select>
+                        </div>
+                        <div class="input-wrapper">
+                            <input class="footer-input" id="mood-title" placeholder="Song title / Activity" type="text" />
+                        </div>
+                        <div class="input-wrapper">
+                            <input class="footer-input" id="mood-artist" placeholder="Artist / Details" type="text" />
+                        </div>
+                        <div class="input-wrapper full-width">
+                            <textarea class="footer-input lyrics-input" id="mood-lyrics" placeholder="Lyrics / Extra thoughts..."></textarea>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn-post" onclick="postMessage()">
-                    Post
-                    <span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
-                </button>
+                <div class="footer-container">
+                    <button class="btn-icon" onclick="toggleMoodPanel()" title="Add Mood/Music">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                    </button>
+                    <div class="flex-1 px-4">
+                        <input class="footer-input" id="message-input" placeholder="Type something ..." type="text" />
+                    </div>
+                    <button class="btn-post" onclick="postMessage()">
+                        Post
+                        <span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
+                    </button>
+                </div>
             </div>
             <div class="footer-credits desktop-only">
                 <a href="https://github.com/lesteraymond/yyyy--notes" target="_blank" class="repo-link">
